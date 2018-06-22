@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <!-- 自动扫描所有注解 注册为bean (启动注解) -->
+    <!--通过看注释就能发现他其实包含了context:annotation-config
+    Scans the classpath for annotated components that will be auto-registered as
+    Spring beans. By default, the Spring-provided @Component, @Repository, @Service,
+    @Controller, @RestController, @ControllerAdvice, and @Configuration stereotypes
+    will be detected.
+
+    Note: This tag implies the effects of the 'annotation-config' tag, activating @Required,
+    @Autowired, @PostConstruct, @PreDestroy, @Resource, @PersistenceContext and @PersistenceUnit
+    annotations in the component classes, which is usually desired for autodetected components
+    (without external configuration). Turn off the 'annotation-config' attribute to deactivate
+    this default behavior, for example in order to use custom BeanPostProcessor definitions
+    for handling those annotations.-->
+    <context:component-scan base-package="com.walle">
+        <context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+    </context:component-scan>
+
+    <!-- 加载db.properties文件中的内容，db.properties文件中的key命名要有一定的特殊规则 -->
+    <!--<context:property-placeholder location="classpath:db.properties" />-->
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <value>classpath:db.properties</value>
+        </property>
+    </bean>
+
+    <!--配置数据源-->
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName" value="${driver}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+        <property name="maxTotal" value="30"/>
+        <property name="maxIdle" value="5"/>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis/mybatis.xml"/>
+        <property name="mapperLocations" value="classpath:mybatis/mappers/*.xml"/>
+
+    </bean>
+    <!--dao不写实现类 有下面两种方法-->
+    <!--<bean id="userDao" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
+    <!--<property name="mapperInterface" value="com.dao.UserMapper" />-->
+    <!--<property name="sqlSessionFactory" ref="sqlSessionFactory" />-->
+    <!--</bean>-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.walle.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 注入数据库连接池 -->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+
+<configuration>
+    <settings>
+        <setting name="lazyLoadingEnabled" value="false" />
+        <setting name="cacheEnabled" value="true"/>
+        <!-- 打印查询语句 -->
+        <setting name="logImpl" value="STDOUT_LOGGING" />
+        <!-- 解决Bean中字段值为Null时，无法保存的问题 -->
+        <setting name="jdbcTypeForNull" value="NULL" />
+    </settings>
+
+    <typeAliases>
+        <!--<typeAlias alias="excutecode" type="com.zlkj.pub.datautils.ExcuteCode" />-->
+    </typeAliases>
+    <!--&lt;!&ndash; 自定义分页插件 &ndash;&gt;-->
+    <!--<plugins>-->
+        <!--<plugin interceptor="com.zlkj.pub.pageplugin.PagePlugin">-->
+            <!--<property name="dialect" value="oracle"/>-->
+            <!--<property name="pageSqlId" value=".*ListPage.*"/>-->
+        <!--</plugin>-->
+    <!--</plugins>-->
+    <mappers>
+    </mappers>
+</configuration>
